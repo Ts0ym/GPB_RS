@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AwakeComponents.Utils;
 using UnityEngine;
 
 namespace _Scripts.Level.Controllers
@@ -35,13 +36,13 @@ namespace _Scripts.Level.Controllers
             if (Input.GetKeyDown(KeyCode.A))
             {
                 Debug.Log("Prev slide called");
-                PreviousSlide();
+                SetPreviousSlide();
             }
         
             if (Input.GetKeyDown(KeyCode.D))
             {
                 Debug.Log("Next slide called");
-                NextSlide();
+                SetNextSlide();
             }
         }
 
@@ -104,7 +105,7 @@ namespace _Scripts.Level.Controllers
             }
         }
 
-        public void NextSlide()
+        public void SetNextSlide()
         {
             LevelController.Instance.ResetIdleTimer();
         
@@ -134,7 +135,7 @@ namespace _Scripts.Level.Controllers
             });
         }
 
-        public void PreviousSlide()
+        public void SetPreviousSlide()
         {
             LevelController.Instance.ResetIdleTimer();
         

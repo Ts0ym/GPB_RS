@@ -180,7 +180,7 @@ namespace _Scripts.Level.Controllers
             
             _currentState = LevelState.Transition;
             StartIdleFadeOut(() => _currentState = LevelState.SlideShow);
-            StartCoroutine(DelayedStartSlideShow(sectionIndex, 3.7f));
+            StartCoroutine(DelayedStartSlideShow(sectionIndex, 0f)); //3.7
             
             if (ledAnimationController != null)
             {

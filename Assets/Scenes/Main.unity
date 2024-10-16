@@ -698,7 +698,7 @@ MonoBehaviour:
   _transition: {fileID: 5615574}
   _idle: {fileID: 1871616543}
   _slidesMask: {fileID: 1996398821}
-  _delayBeforeFadeIn: 4.5
+  _delayBeforeFadeIn: 1
   _whiteBG: {fileID: 1001413288}
   _whiteTransition: {fileID: 2007168235}
   ledAnimationController: {fileID: 41508509}
@@ -1196,6 +1196,7 @@ Transform:
   - {fileID: 41508508}
   - {fileID: 76579241}
   - {fileID: 602874524}
+  - {fileID: 2054037638}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1871616541
@@ -1614,6 +1615,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2007168232}
   m_CullTransparentMesh: 1
+--- !u!1 &2054037637
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2054037638}
+  - component: {fileID: 2054037639}
+  m_Layer: 0
+  m_Name: QualitySettingsController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2054037638
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2054037637}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1840885803}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2054037639
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2054037637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b55e99c8ac5249a1bdb1c6e50d16d95, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetFrameRate: 50
+  vSyncEnabled: 1
+  textureQuality: 0
+  antiAliasingLevel: 0
+  shadowQuality: 2
+  anisotropicFiltering: 1
 --- !u!1001 &2101293000
 PrefabInstance:
   m_ObjectHideFlags: 0

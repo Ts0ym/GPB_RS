@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using _Scripts.Level.UI;
+using AwakeComponents.ArtNet;
 using AwakeComponents.AwakeMediaPlayer;
+using AwakeComponents.Utils;
 using UnityEngine;
 
 namespace _Scripts.Level.Controllers
@@ -25,6 +27,11 @@ namespace _Scripts.Level.Controllers
         [SerializeField] private AMP _idle;
         [SerializeField] private RectMaskAnimation _slidesMask;
         [SerializeField] private float _delayBeforeFadeIn;
+
+        [SerializeField] private GameObject _whiteBG;
+        [SerializeField] private AMP _whiteTransition;
+        
+        public LedAnimationController ledAnimationController;
         
         private KeyCode[] numberKeys = {
             KeyCode.Alpha1,
@@ -45,19 +52,20 @@ namespace _Scripts.Level.Controllers
             _transitionMask.onFinished.AddListener(() => _transitionMask.Seek(6));
             
             _slidesMask.SetStartPosition();
+            
+            if (ledAnimationController == null)
+            {
+                Debug.LogError("LedAnimationController не установлен в LevelController!");
+            }
+            else
+            {
+                ledAnimationController.SetState(LedAnimationController.AnimationState.Idle);
+            }
         }
 
         private void Update()
         {
-            if (_currentState != LevelState.Idle)
-            {
-                _timeSinceLastInteraction += Time.deltaTime;
-                
-                if (_timeSinceLastInteraction >= _idleTimeout)
-                {
-                    SetIdleState();
-                }
-            }
+            // IdleStateTimer();
             
             for (int i = 0; i < numberKeys.Length; i++)
             {
@@ -73,6 +81,21 @@ namespace _Scripts.Level.Controllers
             }
         }
         
+        
+        public void HandleControllerRotation(CustomDataTypes.Direction direction)
+        {
+            switch (direction)
+            {
+                case CustomDataTypes.Direction.Left:
+                    SlidesController.Instance.SetPreviousSlide();
+                    break;
+                
+                case CustomDataTypes.Direction.Right:
+                    SlidesController.Instance.SetNextSlide();
+                    break;
+            }
+        }
+        
         public void ResetIdleTimer()
         {
             _timeSinceLastInteraction = 0f;
@@ -84,6 +107,19 @@ namespace _Scripts.Level.Controllers
             _transition.Play();
             
             _slidesMask.DelayedStartMaskAnimation(_delayBeforeFadeIn, false,() => onComplete?.Invoke());
+        }
+
+        private void IdleStateTimer()
+        {
+            if (_currentState != LevelState.Idle)
+            {
+                _timeSinceLastInteraction += Time.deltaTime;
+                
+                if (_timeSinceLastInteraction >= _idleTimeout)
+                {
+                    SetIdleState();
+                }
+            }
         }
 
         private void StartIdleFadeIn()
@@ -106,14 +142,29 @@ namespace _Scripts.Level.Controllers
         {
             _idle.Seek(0);
             _idle.Play();
+            
+            if (ledAnimationController != null)
+            {
+                ledAnimationController.SetState(LedAnimationController.AnimationState.Idle);
+            }
         }
 
         private void SetIdleState()
         {
             if (_currentState == LevelState.Idle || _currentState == LevelState.Transition) return;
+
+            if (_whiteBG.activeSelf)
+            {
+                _whiteBG.SetActive(false);
+            }
             
             _currentState = LevelState.Transition;
             StartIdleFadeIn();
+            
+            if (ledAnimationController != null)
+            {
+                ledAnimationController.SetState(LedAnimationController.AnimationState.ReturnToIdle);
+            }
         }
         
         private void SetSlideShowState(int sectionIndex)
@@ -121,9 +172,26 @@ namespace _Scripts.Level.Controllers
             ResetIdleTimer();
             if (_currentState == LevelState.SlideShow || _currentState == LevelState.Transition) return;
             
+            if (sectionIndex == 4)
+            {
+                StartCoroutine(DelayedShowWhiteBG(2));
+                _whiteTransition.Play();
+            }
+            
             _currentState = LevelState.Transition;
             StartIdleFadeOut(() => _currentState = LevelState.SlideShow);
-            StartCoroutine(DelayedStartSlideShow(sectionIndex, 3.8f));
+            StartCoroutine(DelayedStartSlideShow(sectionIndex, 0f)); //3.7
+            
+            if (ledAnimationController != null)
+            {
+                ledAnimationController.SetState(LedAnimationController.AnimationState.Active, sectionIndex);
+            }
+        }
+
+        private IEnumerator DelayedShowWhiteBG(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            _whiteBG.SetActive(true);
         }
 
         private IEnumerator DelayedStartSlideShow(int sectionIndex, float delay)

@@ -31,7 +31,7 @@ namespace AwakeComponents.Log
 
         private void Start()
         {
-            Debug.Log("Test");
+            // Debug.Log("Test");
         }
 
         public void RenderDebugUI()

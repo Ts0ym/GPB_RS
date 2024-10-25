@@ -7,10 +7,8 @@ namespace AwakeComponents.ArtNet
     public class LedAnimationController : MonoBehaviour
     {
         public LedController ledController;
-        private int activeThemeIndex = 1;
-
-        // Флаг для отслеживания необходимости обновления
-        private bool needsUpdate = false;
+        private int _activeThemeIndex = 1;
+        private bool _needsUpdate = false;
 
         public enum AnimationState
         {
@@ -34,10 +32,10 @@ namespace AwakeComponents.ArtNet
 
         void Update()
         {
-            if (needsUpdate)
+            if (_needsUpdate)
             {
                 ledController.ShowStrip();
-                needsUpdate = false;
+                _needsUpdate = false;
             }
         }
 
@@ -45,7 +43,7 @@ namespace AwakeComponents.ArtNet
         {
             if (newState == AnimationState.Active)
             {
-                activeThemeIndex = themeIndex;
+                _activeThemeIndex = themeIndex;
             }
 
             if (currentState != newState)
@@ -74,7 +72,6 @@ namespace AwakeComponents.ArtNet
             while (currentState == AnimationState.Idle)
             {
                 SetAllPedestalsColor(Color.white);
-                // ledController.ShowStrip(); // Удаляем вызов
                 yield return new WaitForSeconds(2f);
                 yield return StartCoroutine(PedestalWaveAnimation());
                 yield return StartCoroutine(ReaderPulseAnimation());
@@ -87,8 +84,7 @@ namespace AwakeComponents.ArtNet
             {
                 SetPedestalColor(i, color);
             }
-            // Устанавливаем флаг обновления
-            needsUpdate = true;
+            _needsUpdate = true;
         }
 
         private void SetPedestalColor(int pedestalIndex, Color color)
@@ -102,7 +98,7 @@ namespace AwakeComponents.ArtNet
             {
                 ledController.SetPixel(startPixel + j, r, g, b);
             }
-            needsUpdate = true;
+            _needsUpdate = true;
         }
 
 
@@ -121,7 +117,6 @@ namespace AwakeComponents.ArtNet
             {
                 SetPedestalColor(i, Color.white);
             }
-            // ledController.ShowStrip(); // Удаляем вызов
         }
 
         private IEnumerator FadePedestal(int pedestalIndex, float fromBrightness, float toBrightness, float duration)
@@ -137,11 +132,10 @@ namespace AwakeComponents.ArtNet
                 elapsed += Time.deltaTime;
                 yield return null;
             }
-
-            // Устанавливаем яркость точно в конечное значение после цикла
+            
             Color finalColor = Color.white * toBrightness;
             SetPedestalColor(pedestalIndex, finalColor);
-            needsUpdate = true;
+            _needsUpdate = true;
         }
 
         private IEnumerator ReaderPulseAnimation()
@@ -152,7 +146,6 @@ namespace AwakeComponents.ArtNet
             for (int pulse = 0; pulse < 2; pulse++)
             {
                 SetReaderColor(Color.white);
-                // ledController.ShowStrip(); // Удаляем вызов
                 yield return new WaitForSeconds(0.1f);
                 yield return StartCoroutine(FadeReader(1f, 0f, 0.5f));
             }
@@ -167,8 +160,7 @@ namespace AwakeComponents.ArtNet
             {
                 ledController.SetPixel(startPixel + j, (byte)(color.r * 255), (byte)(color.g * 255), (byte)(color.b * 255));
             }
-            // Устанавливаем флаг обновления
-            needsUpdate = true;
+            _needsUpdate = true;
         }
 
         private IEnumerator FadeReader(float fromBrightness, float toBrightness, float duration)
@@ -180,7 +172,6 @@ namespace AwakeComponents.ArtNet
                 float brightness = Mathf.Lerp(fromBrightness, toBrightness, t);
                 Color color = Color.white * brightness;
                 SetReaderColor(color);
-                // ledController.ShowStrip(); // Удаляем вызов
 
                 elapsed += Time.deltaTime;
                 yield return null;
@@ -189,7 +180,7 @@ namespace AwakeComponents.ArtNet
 
         private IEnumerator ActiveAnimation()
         {
-            int startingIndex = activeThemeIndex;
+            int startingIndex = _activeThemeIndex;
             yield return StartCoroutine(PedestalFadeOutWave(startingIndex));
 
             while (currentState == AnimationState.Active)
@@ -237,8 +228,6 @@ namespace AwakeComponents.ArtNet
                     SetReaderSegment(segment1Start, segmentLength, Color.white);
                     SetReaderSegment(segment2Start, segmentLength, Color.white);
 
-                    // ledController.ShowStrip(); // Удаляем вызов
-
                     yield return new WaitForSeconds(0.05f);
                 }
             }
@@ -251,8 +240,8 @@ namespace AwakeComponents.ArtNet
             {
                 ledController.SetPixel(startPixel + j, 0, 0, 0);
             }
-            // Устанавливаем флаг обновления
-            needsUpdate = true;
+            
+            _needsUpdate = true;
         }
 
         private void SetReaderSegment(int startPixel, int length, Color color)
@@ -263,8 +252,8 @@ namespace AwakeComponents.ArtNet
                 int pixelIndex = (startPixel + j) % 35;
                 ledController.SetPixel(readerStart + pixelIndex, (byte)(color.r * 255), (byte)(color.g * 255), (byte)(color.b * 255));
             }
-            // Устанавливаем флаг обновления
-            needsUpdate = true;
+            
+            _needsUpdate = true;
         }
 
         private IEnumerator ReturnToIdleAnimation()
@@ -278,7 +267,6 @@ namespace AwakeComponents.ArtNet
                 float brightness = Mathf.Lerp(0f, 1f, t);
                 Color color = Color.white * brightness;
                 SetAllPedestalsColor(color);
-                // ledController.ShowStrip(); // Удаляем вызов
 
                 elapsed += Time.deltaTime;
                 yield return null;

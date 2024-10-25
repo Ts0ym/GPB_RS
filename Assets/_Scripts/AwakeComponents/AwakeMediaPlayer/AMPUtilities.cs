@@ -22,23 +22,33 @@ namespace AwakeComponents.AwakeMediaPlayer
 
         // Асинхронная загрузка текстуры из файла
         public static IEnumerator LoadTextureAsync(string filePath, System.Action<Texture2D> onLoaded)
-        {
-            using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(filePath))
-            {
-                yield return uwr.SendWebRequest();
+{
+    // Проверяем и добавляем префикс 'file://' для локальных файлов
+    string pathToLoad = filePath;
+    if (!pathToLoad.StartsWith("http://") && !pathToLoad.StartsWith("https://") && !pathToLoad.StartsWith("file://"))
+    {
+        pathToLoad = "file://" + pathToLoad;
+    }
 
-                if (uwr.result == UnityWebRequest.Result.Success)
-                {
-                    Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
-                    onLoaded?.Invoke(texture);
-                }
-                else
-                {
-                    Debug.LogError("Error: " + uwr.error);
-                    onLoaded?.Invoke(null);
-                }
-            }
+    Debug.Log("Loading texture from: " + pathToLoad);
+
+    using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(pathToLoad))
+    {
+        yield return uwr.SendWebRequest();
+
+        if (uwr.result == UnityWebRequest.Result.Success)
+        {
+            Texture2D texture = DownloadHandlerTexture.GetContent(uwr);
+            onLoaded?.Invoke(texture);
         }
+        else
+        {
+            Debug.LogError("Error: " + uwr.error);
+            onLoaded?.Invoke(null);
+        }
+    }
+}
+
         
         public static void ShowVideoLoader(GameObject parent, Sprite loaderSprite)
         {

@@ -21,7 +21,8 @@ namespace _Scripts.Level.Controllers
         private LevelState _currentState = LevelState.Idle;
         private float _idleTimeout = 60f;
         private float _timeSinceLastInteraction;
-        
+
+        [SerializeField] private bool _isTimerEnable = false;
         [SerializeField] private AMP _transitionMask;
         [SerializeField] private AMP _transition;
         [SerializeField] private AMP _idle;
@@ -65,7 +66,7 @@ namespace _Scripts.Level.Controllers
 
         private void Update()
         {
-            // IdleStateTimer();
+            IdleStateTimer();
             
             for (int i = 0; i < numberKeys.Length; i++)
             {
@@ -111,6 +112,8 @@ namespace _Scripts.Level.Controllers
 
         private void IdleStateTimer()
         {
+            if (!_isTimerEnable) return;
+            
             if (_currentState != LevelState.Idle)
             {
                 _timeSinceLastInteraction += Time.deltaTime;
